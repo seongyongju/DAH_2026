@@ -18,3 +18,6 @@ agents/knowledge_base.json
 
 # 하네스 로컬 설정
 .claude/
+
+# 대회 배포 안내서(재배포 회피)
+DAH 예선_안내서.pdf
