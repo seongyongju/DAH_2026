@@ -1,0 +1,696 @@
+{
+  "provider": "offline",
+  "rounds": [
+    {
+      "round": 1,
+      "attacks": [
+        {
+          "scenario": "S1",
+          "success": true,
+          "blocked": false,
+          "impact": "인증 우회 성공 + 기밀 임무 1건 탈취"
+        },
+        {
+          "scenario": "S2",
+          "success": true,
+          "blocked": false,
+          "impact": "UAV 하이재킹: 항로 이탈 + RTL 무력화"
+        },
+        {
+          "scenario": "S3",
+          "success": true,
+          "blocked": false,
+          "impact": "재전송 3회 실행됨 → 명령 위조/반복 조종 가능"
+        },
+        {
+          "scenario": "S4",
+          "success": true,
+          "blocked": false,
+          "impact": "악성 펌웨어 수락됨 → UGV 백도어/지속성 확보"
+        },
+        {
+          "scenario": "S5",
+          "success": true,
+          "blocked": false,
+          "impact": "무인증 접속 + 스푸핑 좌표 3건 발행 → 군집 유도"
+        }
+      ],
+      "defense": {
+        "detections": [
+          {
+            "scenario": "S1",
+            "evidence": "--",
+            "severity": "high",
+            "controls": [
+              "patch_sqli",
+              "rbac_idor",
+              "block_ip"
+            ]
+          },
+          {
+            "scenario": "S2",
+            "evidence": "authenticated=FALSE",
+            "severity": "high",
+            "controls": [
+              "mavlink_signing",
+              "geofence_enforce"
+            ]
+          },
+          {
+            "scenario": "S3",
+            "evidence": "replay=True",
+            "severity": "high",
+            "controls": [
+              "enable_satcom_replay_protection"
+            ]
+          },
+          {
+            "scenario": "S4",
+            "evidence": "FIRMWARE_UPLOAD",
+            "severity": "high",
+            "controls": [
+              "verify_firmware_sig"
+            ]
+          },
+          {
+            "scenario": "S5",
+            "evidence": "swarm/all/cmd",
+            "severity": "high",
+            "controls": [
+              "require_mqtt_auth"
+            ]
+          }
+        ],
+        "backend": "offline",
+        "remediated_scenarios": [
+          "S1",
+          "S2"
+        ],
+        "applied_controls": [
+          "patch_sqli",
+          "rbac_idor",
+          "block_ip",
+          "mavlink_signing",
+          "geofence_enforce"
+        ],
+        "recovery": [
+          {
+            "scenario": "S1",
+            "recovery_actions": [
+              "invalidate_sessions",
+              "rotate_credentials"
+            ],
+            "status": "restored"
+          },
+          {
+            "scenario": "S2",
+            "recovery_actions": [
+              "force_safe_rtl",
+              "renegotiate_link_key"
+            ],
+            "status": "restored"
+          }
+        ]
+      },
+      "red_plan": {
+        "plan": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5"
+        ],
+        "_backend": "offline",
+        "rationale": "성공률↑·미시도 우선(방어 사각지대 탐침)"
+      },
+      "metrics": {
+        "attacks": 5,
+        "attack_success": 5,
+        "blocked": 0,
+        "detected": 5,
+        "detection_rate": "5/5",
+        "defense_coverage": "5/8",
+        "recovery_actions": 4,
+        "backend": "offline"
+      }
+    },
+    {
+      "round": 2,
+      "attacks": [
+        {
+          "scenario": "S1",
+          "success": false,
+          "blocked": true,
+          "impact": "인증 우회 성공 + 기밀 임무 1건 탈취"
+        },
+        {
+          "scenario": "S2",
+          "success": false,
+          "blocked": true,
+          "impact": "UAV 하이재킹: 항로 이탈 + RTL 무력화"
+        },
+        {
+          "scenario": "S3",
+          "success": true,
+          "blocked": false,
+          "impact": "재전송 3회 실행됨 → 명령 위조/반복 조종 가능"
+        },
+        {
+          "scenario": "S4",
+          "success": true,
+          "blocked": false,
+          "impact": "악성 펌웨어 수락됨 → UGV 백도어/지속성 확보"
+        },
+        {
+          "scenario": "S5",
+          "success": true,
+          "blocked": false,
+          "impact": "무인증 접속 + 스푸핑 좌표 3건 발행 → 군집 유도"
+        }
+      ],
+      "defense": {
+        "detections": [
+          {
+            "scenario": "S1",
+            "evidence": "--",
+            "severity": "high",
+            "controls": [
+              "patch_sqli",
+              "rbac_idor",
+              "block_ip"
+            ]
+          },
+          {
+            "scenario": "S2",
+            "evidence": "authenticated=FALSE",
+            "severity": "high",
+            "controls": [
+              "mavlink_signing",
+              "geofence_enforce"
+            ]
+          },
+          {
+            "scenario": "S3",
+            "evidence": "replay=True",
+            "severity": "high",
+            "controls": [
+              "enable_satcom_replay_protection"
+            ]
+          },
+          {
+            "scenario": "S4",
+            "evidence": "FIRMWARE_UPLOAD",
+            "severity": "high",
+            "controls": [
+              "verify_firmware_sig"
+            ]
+          },
+          {
+            "scenario": "S5",
+            "evidence": "swarm/all/cmd",
+            "severity": "high",
+            "controls": [
+              "require_mqtt_auth"
+            ]
+          }
+        ],
+        "backend": "offline",
+        "remediated_scenarios": [
+          "S3",
+          "S4"
+        ],
+        "applied_controls": [
+          "enable_satcom_replay_protection",
+          "verify_firmware_sig"
+        ],
+        "recovery": [
+          {
+            "scenario": "S3",
+            "recovery_actions": [
+              "revoke_satcom_token",
+              "reissue_session_token"
+            ],
+            "status": "restored"
+          },
+          {
+            "scenario": "S4",
+            "recovery_actions": [
+              "reflash_golden_firmware",
+              "verify_boot_hash"
+            ],
+            "status": "restored"
+          }
+        ]
+      },
+      "red_plan": {
+        "plan": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5"
+        ],
+        "_backend": "offline",
+        "rationale": "성공률↑·미시도 우선(방어 사각지대 탐침)"
+      },
+      "metrics": {
+        "attacks": 5,
+        "attack_success": 3,
+        "blocked": 2,
+        "detected": 5,
+        "detection_rate": "5/5",
+        "defense_coverage": "7/8",
+        "recovery_actions": 4,
+        "backend": "offline"
+      }
+    },
+    {
+      "round": 3,
+      "attacks": [
+        {
+          "scenario": "S3",
+          "success": false,
+          "blocked": true,
+          "impact": "재전송 3회 실행됨 → 명령 위조/반복 조종 가능"
+        },
+        {
+          "scenario": "S4",
+          "success": false,
+          "blocked": true,
+          "impact": "악성 펌웨어 수락됨 → UGV 백도어/지속성 확보"
+        },
+        {
+          "scenario": "S5",
+          "success": true,
+          "blocked": false,
+          "impact": "무인증 접속 + 스푸핑 좌표 3건 발행 → 군집 유도"
+        },
+        {
+          "scenario": "S1",
+          "success": false,
+          "blocked": true,
+          "impact": "인증 우회 성공 + 기밀 임무 1건 탈취"
+        },
+        {
+          "scenario": "S2",
+          "success": false,
+          "blocked": true,
+          "impact": "UAV 하이재킹: 항로 이탈 + RTL 무력화"
+        }
+      ],
+      "defense": {
+        "detections": [
+          {
+            "scenario": "S1",
+            "evidence": "--",
+            "severity": "high",
+            "controls": [
+              "patch_sqli",
+              "rbac_idor",
+              "block_ip"
+            ]
+          },
+          {
+            "scenario": "S2",
+            "evidence": "authenticated=FALSE",
+            "severity": "high",
+            "controls": [
+              "mavlink_signing",
+              "geofence_enforce"
+            ]
+          },
+          {
+            "scenario": "S3",
+            "evidence": "replay=True",
+            "severity": "high",
+            "controls": [
+              "enable_satcom_replay_protection"
+            ]
+          },
+          {
+            "scenario": "S4",
+            "evidence": "FIRMWARE_UPLOAD",
+            "severity": "high",
+            "controls": [
+              "verify_firmware_sig"
+            ]
+          },
+          {
+            "scenario": "S5",
+            "evidence": "swarm/all/cmd",
+            "severity": "high",
+            "controls": [
+              "require_mqtt_auth"
+            ]
+          }
+        ],
+        "backend": "offline",
+        "remediated_scenarios": [
+          "S5"
+        ],
+        "applied_controls": [
+          "require_mqtt_auth"
+        ],
+        "recovery": [
+          {
+            "scenario": "S5",
+            "recovery_actions": [
+              "reset_swarm_waypoints",
+              "rotate_broker_creds"
+            ],
+            "status": "restored"
+          }
+        ]
+      },
+      "red_plan": {
+        "plan": [
+          "S3",
+          "S4",
+          "S5",
+          "S1",
+          "S2"
+        ],
+        "_backend": "offline",
+        "rationale": "성공률↑·미시도 우선(방어 사각지대 탐침)"
+      },
+      "metrics": {
+        "attacks": 5,
+        "attack_success": 1,
+        "blocked": 4,
+        "detected": 5,
+        "detection_rate": "5/5",
+        "defense_coverage": "8/8",
+        "recovery_actions": 2,
+        "backend": "offline"
+      }
+    },
+    {
+      "round": 4,
+      "attacks": [
+        {
+          "scenario": "S5",
+          "success": false,
+          "blocked": true,
+          "impact": "무인증 접속 + 스푸핑 좌표 3건 발행 → 군집 유도"
+        },
+        {
+          "scenario": "S3",
+          "success": false,
+          "blocked": true,
+          "impact": "재전송 3회 실행됨 → 명령 위조/반복 조종 가능"
+        },
+        {
+          "scenario": "S4",
+          "success": false,
+          "blocked": true,
+          "impact": "악성 펌웨어 수락됨 → UGV 백도어/지속성 확보"
+        },
+        {
+          "scenario": "S1",
+          "success": false,
+          "blocked": true,
+          "impact": "인증 우회 성공 + 기밀 임무 1건 탈취"
+        },
+        {
+          "scenario": "S2",
+          "success": false,
+          "blocked": true,
+          "impact": "UAV 하이재킹: 항로 이탈 + RTL 무력화"
+        }
+      ],
+      "defense": {
+        "detections": [
+          {
+            "scenario": "S1",
+            "evidence": "--",
+            "severity": "high",
+            "controls": [
+              "patch_sqli",
+              "rbac_idor",
+              "block_ip"
+            ]
+          },
+          {
+            "scenario": "S2",
+            "evidence": "authenticated=FALSE",
+            "severity": "high",
+            "controls": [
+              "mavlink_signing",
+              "geofence_enforce"
+            ]
+          },
+          {
+            "scenario": "S3",
+            "evidence": "replay=True",
+            "severity": "high",
+            "controls": [
+              "enable_satcom_replay_protection"
+            ]
+          },
+          {
+            "scenario": "S4",
+            "evidence": "FIRMWARE_UPLOAD",
+            "severity": "high",
+            "controls": [
+              "verify_firmware_sig"
+            ]
+          },
+          {
+            "scenario": "S5",
+            "evidence": "swarm/all/cmd",
+            "severity": "high",
+            "controls": [
+              "require_mqtt_auth"
+            ]
+          }
+        ],
+        "backend": "offline",
+        "remediated_scenarios": [],
+        "applied_controls": [],
+        "recovery": []
+      },
+      "red_plan": {
+        "plan": [
+          "S5",
+          "S3",
+          "S4",
+          "S1",
+          "S2"
+        ],
+        "_backend": "offline",
+        "rationale": "성공률↑·미시도 우선(방어 사각지대 탐침)"
+      },
+      "metrics": {
+        "attacks": 5,
+        "attack_success": 0,
+        "blocked": 5,
+        "detected": 5,
+        "detection_rate": "5/5",
+        "defense_coverage": "8/8",
+        "recovery_actions": 0,
+        "backend": "offline"
+      }
+    },
+    {
+      "round": 5,
+      "attacks": [
+        {
+          "scenario": "S5",
+          "success": false,
+          "blocked": true,
+          "impact": "무인증 접속 + 스푸핑 좌표 3건 발행 → 군집 유도"
+        },
+        {
+          "scenario": "S3",
+          "success": false,
+          "blocked": true,
+          "impact": "재전송 3회 실행됨 → 명령 위조/반복 조종 가능"
+        },
+        {
+          "scenario": "S4",
+          "success": false,
+          "blocked": true,
+          "impact": "악성 펌웨어 수락됨 → UGV 백도어/지속성 확보"
+        },
+        {
+          "scenario": "S1",
+          "success": false,
+          "blocked": true,
+          "impact": "인증 우회 성공 + 기밀 임무 1건 탈취"
+        },
+        {
+          "scenario": "S2",
+          "success": false,
+          "blocked": true,
+          "impact": "UAV 하이재킹: 항로 이탈 + RTL 무력화"
+        }
+      ],
+      "defense": {
+        "detections": [
+          {
+            "scenario": "S1",
+            "evidence": "--",
+            "severity": "high",
+            "controls": [
+              "patch_sqli",
+              "rbac_idor",
+              "block_ip"
+            ]
+          },
+          {
+            "scenario": "S2",
+            "evidence": "authenticated=FALSE",
+            "severity": "high",
+            "controls": [
+              "mavlink_signing",
+              "geofence_enforce"
+            ]
+          },
+          {
+            "scenario": "S3",
+            "evidence": "replay=True",
+            "severity": "high",
+            "controls": [
+              "enable_satcom_replay_protection"
+            ]
+          },
+          {
+            "scenario": "S4",
+            "evidence": "FIRMWARE_UPLOAD",
+            "severity": "high",
+            "controls": [
+              "verify_firmware_sig"
+            ]
+          },
+          {
+            "scenario": "S5",
+            "evidence": "swarm/all/cmd",
+            "severity": "high",
+            "controls": [
+              "require_mqtt_auth"
+            ]
+          }
+        ],
+        "backend": "offline",
+        "remediated_scenarios": [],
+        "applied_controls": [],
+        "recovery": []
+      },
+      "red_plan": {
+        "plan": [
+          "S5",
+          "S3",
+          "S4",
+          "S1",
+          "S2"
+        ],
+        "_backend": "offline",
+        "rationale": "성공률↑·미시도 우선(방어 사각지대 탐침)"
+      },
+      "metrics": {
+        "attacks": 5,
+        "attack_success": 0,
+        "blocked": 5,
+        "detected": 5,
+        "detection_rate": "5/5",
+        "defense_coverage": "8/8",
+        "recovery_actions": 0,
+        "backend": "offline"
+      }
+    }
+  ],
+  "mttb_round": {
+    "S1": 1,
+    "S2": 1,
+    "S3": 2,
+    "S4": 2,
+    "S5": 3
+  },
+  "final_memory": {
+    "rounds": 5,
+    "scenarios": {
+      "S1": {
+        "attempts": 5,
+        "success": 1,
+        "blocked": 4,
+        "last_result": "blocked",
+        "notes": [
+          "인증 우회 성공 + 기밀 임무 1건 탈취",
+          "인증 우회 성공 + 기밀 임무 1건 탈취",
+          "인증 우회 성공 + 기밀 임무 1건 탈취",
+          "인증 우회 성공 + 기밀 임무 1건 탈취",
+          "인증 우회 성공 + 기밀 임무 1건 탈취"
+        ]
+      },
+      "S2": {
+        "attempts": 5,
+        "success": 1,
+        "blocked": 4,
+        "last_result": "blocked",
+        "notes": [
+          "UAV 하이재킹: 항로 이탈 + RTL 무력화",
+          "UAV 하이재킹: 항로 이탈 + RTL 무력화",
+          "UAV 하이재킹: 항로 이탈 + RTL 무력화",
+          "UAV 하이재킹: 항로 이탈 + RTL 무력화",
+          "UAV 하이재킹: 항로 이탈 + RTL 무력화"
+        ]
+      },
+      "S3": {
+        "attempts": 5,
+        "success": 2,
+        "blocked": 3,
+        "last_result": "blocked",
+        "notes": [
+          "재전송 3회 실행됨 → 명령 위조/반복 조종 가능",
+          "재전송 3회 실행됨 → 명령 위조/반복 조종 가능",
+          "재전송 3회 실행됨 → 명령 위조/반복 조종 가능",
+          "재전송 3회 실행됨 → 명령 위조/반복 조종 가능",
+          "재전송 3회 실행됨 → 명령 위조/반복 조종 가능"
+        ]
+      },
+      "S4": {
+        "attempts": 5,
+        "success": 2,
+        "blocked": 3,
+        "last_result": "blocked",
+        "notes": [
+          "악성 펌웨어 수락됨 → UGV 백도어/지속성 확보",
+          "악성 펌웨어 수락됨 → UGV 백도어/지속성 확보",
+          "악성 펌웨어 수락됨 → UGV 백도어/지속성 확보",
+          "악성 펌웨어 수락됨 → UGV 백도어/지속성 확보",
+          "악성 펌웨어 수락됨 → UGV 백도어/지속성 확보"
+        ]
+      },
+      "S5": {
+        "attempts": 5,
+        "success": 3,
+        "blocked": 2,
+        "last_result": "blocked",
+        "notes": [
+          "무인증 접속 + 스푸핑 좌표 3건 발행 → 군집 유도",
+          "무인증 접속 + 스푸핑 좌표 3건 발행 → 군집 유도",
+          "무인증 접속 + 스푸핑 좌표 3건 발행 → 군집 유도",
+          "무인증 접속 + 스푸핑 좌표 3건 발행 → 군집 유도",
+          "무인증 접속 + 스푸핑 좌표 3건 발행 → 군집 유도"
+        ]
+      }
+    },
+    "defenses_applied": [
+      "patch_sqli",
+      "rbac_idor",
+      "block_ip",
+      "mavlink_signing",
+      "geofence_enforce",
+      "enable_satcom_replay_protection",
+      "verify_firmware_sig",
+      "require_mqtt_auth"
+    ],
+    "lessons": [
+      "R1: 탐지 5/5, 성공 5, 차단 0, 방어 5/8",
+      "R2: 탐지 5/5, 성공 3, 차단 2, 방어 7/8",
+      "R3: 탐지 5/5, 성공 1, 차단 4, 방어 8/8",
+      "R4: 탐지 5/5, 성공 0, 차단 5, 방어 8/8",
+      "R5: 탐지 5/5, 성공 0, 차단 5, 방어 8/8"
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+# DAH 2026 - 격리 공방 랩 (victim + MQTT broker + Kali AI agents)
+# 사용:  docker compose up --build
+# 주의:  internal 네트워크로 외부 노출을 차단(연구·경진대회용)
+services:
+
+  # 취약 지상통제소 트윈 (웹 GCS / MAVLink / SATCOM / 스웜 노드)
+  victim:
+    build: ./victim-server
+    container_name: dah-victim
+    networks: [labnet]
+    volumes:
+      - ./_logs:/app          # 감사 로그를 호스트/에이전트와 공유
+    depends_on: [mqtt]
+    # 포트 미노출: 랩 내부에서만 접근
+
+  # 무인증 MQTT 스웜 브로커 (S5 대상)
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: dah-mqtt
+    networks: [labnet]
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+
+  # Kali 기반 공격/방어 AI 에이전트
+  agents:
+    build:
+      context: .
+      dockerfile: agents/Dockerfile
+    container_name: dah-agents
+    networks: [labnet]
+    depends_on: [victim, mqtt]
+    environment:
+      - VICTIM_LOG_DIR=/logs
+      # 두뇌 선택: anthropic | claude-code | gemini | codex | offline
+      - AGENT_PROVIDER=${AGENT_PROVIDER:-offline}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+    volumes:
+      - ./_logs:/logs:ro       # victim 감사 로그를 방어 에이전트가 관찰
+    # 두뇌 교체 예:
+    #   AGENT_PROVIDER=claude-code docker compose run agents python3 orchestrator.py --rounds 5
+    #   AGENT_PROVIDER=anthropic ANTHROPIC_API_KEY=sk-... docker compose run agents \
+    #     python3 orchestrator.py --rounds 5
+
+networks:
+  labnet:
+    driver: bridge
+    internal: true             # 외부 인터넷 차단(격리)

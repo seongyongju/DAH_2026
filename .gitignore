@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# 실행 산출물(재현 가능)
+_logs/
+victim-server/*.db
+victim-server/*_audit.log
+victim-server/firmware_store/
+agents/knowledge_base.json
+
+# OS/편집기
+.DS_Store
+~$*.docx
+*.swp
+
+# 하네스 로컬 설정
+.claude/
